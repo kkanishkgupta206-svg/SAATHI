@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom smooth pulse & breath animations */
+@keyframes softPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.animate-soft-pulse {
+  animation: softPulse 4s ease-in-out infinite;
+}
+
+/* Avatar subtle breathing movement */
+@keyframes avatarBreathing {
+  0%, 100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  50% {
+    transform: scale(1.01, 1.02) translateY(-1px);
+  }
+}
+
+.animate-avatar-breathing {
+  transform-origin: 100px 180px;
+  animation: avatarBreathing 4.2s ease-in-out infinite;
+}
+
+/* Raj: Slow steady nods, relaxed posture */
+@keyframes rajSteadyNods {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  40% {
+    transform: rotate(0.8deg) translateY(1.2px);
+  }
+  75% {
+    transform: rotate(-0.5deg) translateY(0.4px);
+  }
+}
+
+.animate-avatar-raj-steady {
+  transform-origin: 100px 140px;
+  animation: rajSteadyNods 4.6s ease-in-out infinite;
+}
+
+/* Aneet: Very gentle head tilts, slow warm blinks */
+@keyframes aneetGentleTilts {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  35% {
+    transform: rotate(2deg) translateY(0.5px);
+  }
+  70% {
+    transform: rotate(-1.6deg) translateY(-0.5px);
+  }
+}
+
+.animate-avatar-aneet-tilt {
+  transform-origin: 100px 140px;
+  animation: aneetGentleTilts 5.4s ease-in-out infinite;
+}
+
+/* Rahul: Quick lively head movements, small bounces */
+@keyframes rahulLivelyBounces {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: rotate(-2.2deg) translateY(-2.2px);
+  }
+  60% {
+    transform: rotate(2deg) translateY(0);
+  }
+  85% {
+    transform: rotate(-0.5deg) translateY(-1px);
+  }
+}
+
+.animate-avatar-rahul-lively {
+  transform-origin: 100px 140px;
+  animation: rahulLivelyBounces 2.6s ease-in-out infinite;
+}
+
+/* Rani: Soft bouncy sway, cheerful head tilts, shy smile */
+@keyframes raniBouncySway {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  30% {
+    transform: rotate(-2.4deg) translateY(-1.5px);
+  }
+  70% {
+    transform: rotate(2.2deg) translateY(0.8px);
+  }
+}
+
+.animate-avatar-rani-bouncy {
+  transform-origin: 100px 140px;
+  animation: raniBouncySway 3.2s ease-in-out infinite;
+}
+
+/* Listening state: Attentive eyes and slow nod while typing or speaking */
+@keyframes avatarListenNod {
+  0%, 100% {
+    transform: rotate(0.5deg) translateY(0.5px);
+  }
+  50% {
+    transform: rotate(1.5deg) translateY(2.5px);
+  }
+}
+
+.animate-avatar-listen-nod {
+  transform-origin: 100px 140px;
+  animation: avatarListenNod 2.2s ease-in-out infinite;
+}
+
+/* Avatar blinking idle animation */
+@keyframes avatarBlink {
+  0%, 94%, 98%, 100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+
+.animate-avatar-blink {
+  transform-origin: center;
+  animation: avatarBlink 3.8s infinite ease-in-out;
+}
+
+/* Avatar talking mouth movement fallback */
+@keyframes avatarTalkMouth {
+  0%, 100% {
+    transform: scaleY(1) scaleX(1);
+  }
+  50% {
+    transform: scaleY(1.45) scaleX(1.08);
+  }
+}
+
+.animate-avatar-talking {
+  transform-origin: center;
+  animation: avatarTalkMouth 0.22s infinite ease-in-out alternate;
+}
+
+/* Avatar gentle head bounce while streaming reply */
+@keyframes avatarSpeakingBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+.animate-avatar-speaking-bounce {
+  animation: avatarSpeakingBounce 0.35s infinite ease-in-out alternate;
+}
+
+/* Respect user's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-avatar-breathing,
+  .animate-avatar-raj-steady,
+  .animate-avatar-aneet-tilt,
+  .animate-avatar-rahul-lively,
+  .animate-avatar-rani-bouncy,
+  .animate-avatar-listen-nod,
+  .animate-avatar-blink,
+  .animate-avatar-talking,
+  .animate-avatar-speaking-bounce {
+    animation: none !important;
+    transform: none !important;
+  }
+}

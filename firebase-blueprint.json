@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User account and profile details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "avatar": { "type": "string" },
+        "isGuest": { "type": "boolean" },
+        "language": { "type": "string", "enum": ["en", "hi"] },
+        "createdAt": { "type": "number" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "lastLoginAt": { "type": "number" }
+      },
+      "required": ["id", "name"]
+    },
+    "Psychiatrist": {
+      "title": "Psychiatrist",
+      "description": "Verified psychiatrist and clinic directory entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "qualification": { "type": "string" },
+        "clinicName": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "pin": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "phone": { "type": "string" },
+        "languages": { "type": "array" },
+        "consultationFee": { "type": "string" },
+        "timings": { "type": "string" },
+        "onlineConsultation": { "type": "boolean" },
+        "verified": { "type": "boolean" }
+      },
+      "required": ["id", "name", "clinicName", "city", "phone", "verified"]
+    },
+    "ChatShareRequest": {
+      "title": "ChatShareRequest",
+      "description": "Patient consent request to share avatar chat transcript with a psychiatrist, subject to admin approval",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "doctorClinic": { "type": "string" },
+        "selectedChats": { "type": "array" },
+        "shareLast7DaysOnly": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "revoked", "expired"] },
+        "rejectionReason": { "type": "string" },
+        "consentTextVersion": { "type": "string" },
+        "userConsentGivenAt": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "approvedAt": { "type": "number" },
+        "approvedBy": { "type": "string" },
+        "expiresAt": { "type": "number" },
+        "accessToken": { "type": "string" }
+      },
+      "required": ["id", "userId", "doctorId", "status", "consentTextVersion", "userConsentGivenAt"]
+    },
+    "AuditLogEntry": {
+      "title": "AuditLogEntry",
+      "description": "Security audit trail for chat sharing, approvals, views, and revocations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "requestId": { "type": "string" },
+        "userId": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "action", "requestId", "performedBy", "timestamp"]
+    },
+    "SafetyMetric": {
+      "title": "SafetyMetric",
+      "description": "Anonymous aggregated count of crisis alerts (no message text, username, or userId)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "totalAlerts": { "type": "number" },
+        "alertsThisWeek": { "type": "number" },
+        "lastUpdated": { "type": "number" }
+      },
+      "required": ["id", "totalAlerts"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document"
+    },
+    "/users/{userId}/chatHistory/{docId}": {
+      "schema": "object",
+      "description": "Private Saathi AI chat history (Owner-only readable, zero admin access)"
+    },
+    "/users/{userId}/avatarChats/{avatarId}": {
+      "schema": "object",
+      "description": "Private chat history with specific Avatar Friend (Owner-only readable, zero admin access)"
+    },
+    "/users/{userId}/avatar/{docId}": {
+      "schema": "object",
+      "description": "User custom avatar preferences (Owner-only readable)"
+    },
+    "/systemConfig/{docId}": {
+      "schema": "object",
+      "description": "Global application configuration and feature flags"
+    },
+    "/systemMetrics/{metricId}": {
+      "schema": "SafetyMetric",
+      "description": "Anonymous aggregated safety counters (zero message text or user identity)"
+    },
+    "/psychiatrists/{psychiatristId}": {
+      "schema": "Psychiatrist",
+      "description": "Verified medical psychiatrists directory"
+    },
+    "/shareRequests/{requestId}": {
+      "schema": "ChatShareRequest",
+      "description": "Consent-based transcript sharing requests with admin approval"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLogEntry",
+      "description": "Immutable security and access audit events without message content"
+    }
+  }
+}

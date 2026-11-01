@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == 'shub00108@gmail.com' ||
+          request.auth.token.email.lower() == 'kkkanishkgupta24206@gmail.com'
+        )) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Admins collection
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Users Collection and Subcollections
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin() || isOwner(userId);
+
+      // ========================================================
+      // USER PRIVATE CHAT HISTORIES - STRICT OWNER-ONLY ACCESS
+      // The admin must NOT be able to read, search, export, or
+      // view any user's chat messages, conversation titles, or
+      // summaries anywhere. Explicitly denied to all others including admin.
+      // ========================================================
+      match /chatHistory/{docId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+
+      match /avatarChats/{avatarId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+
+      // User custom avatar preferences
+      match /avatar/{docId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+
+      // Reflections / Journal entries (Owner-only privacy)
+      match /reflections/{reflectionId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+    }
+
+    // System Configuration & Feature Flags
+    match /systemConfig/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Anonymous System Safety Metrics (Counts ONLY - zero message text, zero usernames, zero user IDs)
+    match /systemMetrics/{metricId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    // Verified Psychiatrists Directory
+    match /psychiatrists/{psychiatristId} {
+      allow read: if isSignedIn() && (resource.data.verified == true || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Chat Share Requests with Psychiatrists (Consent-based)
+    match /shareRequests/{requestId} {
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == 'pending';
+
+      allow update: if isSignedIn() && (
+        (isOwner(resource.data.userId) && request.resource.data.status == 'revoked') ||
+        isAdmin()
+      );
+
+      allow delete: if isAdmin() || isOwner(resource.data.userId);
+    }
+
+    // Audit logs collection (Security trail without chat message contents)
+    match /auditLogs/{logId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+  }
+}

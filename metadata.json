@@ -1,0 +1,11 @@
+{
+  "name": "Remix SAATHI",
+  "description": "A calm, compassionate listening companion providing a safe space to share thoughts, supportive reflections, guided breathing, and mental health resources.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
